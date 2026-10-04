@@ -1,0 +1,64 @@
+[project]
+name = "agentic-rag"
+version = "0.1.0"
+description = "Hybrid RAG: Reflex, FastAPI, LangGraph, FAISS, BM25, SQLite"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    # Backend API
+    "fastapi",
+    "uvicorn[standard]",
+    "python-multipart",
+    "pydantic",
+    "pydantic-settings",
+    "python-dotenv",
+
+    # Orchestration + LLM
+    "langgraph",
+    "langchain-core",
+    "langchain-text-splitters",
+    "langchain-google-genai",
+    "langchain-ollama",
+
+    # Retrieval
+    "sentence-transformers",
+    "torch",
+    "faiss-cpu",
+    "rank-bm25",
+    "numpy",
+
+    # Metadata / documents
+    "sqlalchemy",
+    "pypdf",
+    "python-docx",
+
+    # Frontend
+    "reflex",
+    "httpx",
+
+    # Observability
+    "langsmith",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ipykernel",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+# CPU-only PyTorch on Linux/Windows (avoids a multi-GB CUDA download)
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
