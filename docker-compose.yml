@@ -1,0 +1,60 @@
+services:
+
+  # ── FastAPI + LangGraph backend ──────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: rag-backend
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    environment:
+      # Override OLLAMA_BASE_URL to point at the ollama container (if used)
+      OLLAMA_BASE_URL: http://ollama:11434
+    volumes:
+      # Persist uploaded documents and indexes between restarts
+      - rag-data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s   # models can be slow to warm up
+
+  # ── Reflex frontend ───────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: rag-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"   # Next.js UI
+      - "8000:8000"   # Reflex state WebSocket (must NOT be the backend port 8001)
+    environment:
+      RAG_API_URL: http://backend:8001
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # ── Ollama (optional — only needed if LLM_PROVIDER=ollama) ───────────────────
+  ollama:
+    image: ollama/ollama:latest
+    container_name: rag-ollama
+    restart: unless-stopped
+    profiles:
+      - ollama   # only starts when: docker compose --profile ollama up
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    # To pull a model: docker exec rag-ollama ollama pull llama3.2
+
+volumes:
+  rag-data:
+    driver: local
+  ollama-models:
+    driver: local

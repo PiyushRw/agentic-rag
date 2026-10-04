@@ -1,0 +1,32 @@
+# ── Frontend: Reflex (Next.js + Python state) ─────────────────────────────────
+FROM python:3.12-slim AS frontend
+
+WORKDIR /app/frontend
+
+# Node.js 20 LTS — required by Reflex to build the Next.js bundle
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl \
+        unzip \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Install Python deps into a venv
+COPY pyproject.toml uv.lock /app/
+RUN cd /app && uv sync --frozen --no-dev
+
+# Copy the Reflex app
+COPY frontend/ ./
+
+# Pre-init Reflex (downloads npm packages, compiles components)
+# RAG_API_URL points at the backend service name in docker-compose
+ENV RAG_API_URL=http://backend:8001
+RUN cd /app/frontend && /app/.venv/bin/reflex init || true
+
+# Reflex frontend (Next.js) + Reflex WebSocket backend
+EXPOSE 3000 8000
+
+CMD ["/app/.venv/bin/reflex", "run", "--env", "prod", "--backend-host", "0.0.0.0"]

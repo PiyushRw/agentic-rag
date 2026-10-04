@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
     reranker_model_name: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 
-    # ---------- LLM provider ("gemini" or "ollama") ----------
+    # ---------- LLM provider ("gemini", "ollama", or "huggingface") ----------
     llm_provider: str = "gemini"
 
     # Gemini (Google AI Studio free tier)
@@ -35,6 +35,10 @@ class Settings(BaseSettings):
     # Ollama (local fallback)
     ollama_model: str = "llama3.2"
     ollama_base_url: str = "http://localhost:11434"
+
+    # HuggingFace Inference API (free tier — get token at huggingface.co/settings/tokens)
+    hf_token: str = ""
+    hf_model: str = "mistralai/Mistral-7B-Instruct-v0.3"  # free serverless inference
 
     # ---------- Chunking (characters) ----------
     chunk_size: int = 800

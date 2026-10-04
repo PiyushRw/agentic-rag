@@ -1,0 +1,31 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+*.egg-info/
+
+# Virtual env (rebuilt inside the image)
+.venv/
+
+# Secrets (pass via docker compose env_file or -e flags)
+.env
+
+# Data directories (mounted as Docker volumes at runtime)
+data/documents/
+data/indexes/
+data/rag.db
+
+# Reflex generated build artifacts (rebuilt inside the image)
+frontend/.web/
+frontend/__pycache__/
+frontend/.states/
+frontend/reflex.lock/
+frontend/uploaded_files/
+
+# Dev / test
+tests/
+.vscode/
+.idea/
+.git/
+.gitignore

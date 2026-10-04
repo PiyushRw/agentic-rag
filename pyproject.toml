@@ -12,30 +12,27 @@ dependencies = [
     "pydantic",
     "pydantic-settings",
     "python-dotenv",
-
     # Orchestration + LLM
     "langgraph",
     "langchain-core",
     "langchain-text-splitters",
     "langchain-google-genai",
     "langchain-ollama",
-
+    "langchain-huggingface",
+    "huggingface-hub",
     # Retrieval
     "sentence-transformers",
     "torch",
     "faiss-cpu",
     "rank-bm25",
     "numpy",
-
     # Metadata / documents
     "sqlalchemy",
     "pypdf",
     "python-docx",
-
     # Frontend
     "reflex",
     "httpx",
-
     # Observability
     "langsmith",
 ]
